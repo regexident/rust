@@ -17,16 +17,16 @@ matrix:
   include:
     # Images used in testing PR and try-build should be run first.
     - env: IMAGE=x86_64-gnu-llvm-5.0 RUST_BACKTRACE=1
-      if: type = pull_request OR branch = auto
+      if: type = pull_request AND branch = auto
 
     - env: IMAGE=dist-x86_64-linux DEPLOY=1
-      if: branch = try OR branch = auto
+      if: branch = try AND branch = auto
 
     # "alternate" deployments, these are "nightlies" but have LLVM assertions
     # turned on, they're deployed to a different location primarily for
     # additional testing.
     - env: IMAGE=dist-x86_64-linux DEPLOY_ALT=1 CI_JOB_NAME=dist-x86_64-linux-alt
-      if: branch = try OR branch = auto
+      if: branch = try AND branch = auto
 
     - env: >
         RUST_CHECK_TARGET=dist
@@ -40,7 +40,7 @@ matrix:
         CI_JOB_NAME=dist-x86_64-apple-alt
       os: osx
       osx_image: xcode9.3-moar
-      if: branch = auto
+      if: branch = auto OR branch = try
 
     # macOS builders. These are placed near the beginning because they are very
     # slow to run.
@@ -254,7 +254,8 @@ before_script:
 script:
   - >
       date && (curl -fs --head https://google.com | grep ^Date: | sed 's/Date: //g' || true)
-  - stamp sh -x -c "$RUN_SCRIPT"
+  #- stamp sh -x -c "$RUN_SCRIPT"
+  - mkdir -p build/dist && touch build/dist/test-only
   - >
       date && (curl -fs --head https://google.com | grep ^Date: | sed 's/Date: //g' || true)
 
